@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block title %}
+    Profile
+{% endblock title %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-yellow-50 to-amber-100 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto pt-24 sm:pt-28 bg-white p-6 sm:p-10 rounded-3xl shadow-2xl">
+
+    <!-- Profile Header -->
+    <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-6 mb-10 border-b pb-6">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+        <img src="{{ user.profile.profile_image.url|default:'/static/images/default-avatar.jpg' }}"
+             alt="Profile Photo"
+             class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-amber-800 object-cover shadow-md" />
+        <div class="text-center sm:text-left">
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 break-words">{{ user.username }}</h2>
+          <p class="text-gray-600 text-sm sm:text-base break-all">{{ user.profile.email }}</p>
+          <a href="{% url 'edit_profile' %}" class="text-amber-800 hover:underline text-sm sm:text-base mt-2 inline-block">
+            Edit Profile
+          </a>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <div class="mt-4 sm:mt-0">
+        <a href="{% url 'Logout' %}" class="block text-center sm:inline-block bg-amber-800 text-white px-4 py-2 rounded hover:bg-amber-900 transition w-full sm:w-auto">
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Orders Header -->
+    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">Your Past Orders</h3>
+
+    {% if orders %}
+      <div class="space-y-6">
+        {% for order in orders %}
+          <div class="bg-yellow-50 border border-yellow-200 rounded-xl shadow-sm hover:shadow-md transition duration-300 p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-3 space-y-2 sm:space-y-0">
+              <div>
+                <p class="text-base sm:text-lg font-semibold text-gray-800">Order #{{ order.id }}</p>
+                <p class="text-sm text-gray-500">Placed on {{ order.ordered_at }}</p>
+              </div>
+              <span class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full
+                {% if order.status == 'DELIVERED' %}
+                  bg-amber-100 text-amber-900
+                {% elif order.status == 'PENDING' %}
+                  bg-yellow-200 text-yellow-900
+                {% elif order.status == 'CANCELLED' %}
+                  bg-red-100 text-red-700
+                {% else %}
+                  bg-gray-100 text-gray-700
+                {% endif %}
+              ">
+                {{ order.status }}
+              </span>
+            </div>
+            <div class="border-t pt-3 mt-3">
+              <ul class="text-sm text-gray-700 space-y-1">
+                {% for item in order.items.all %}
+                  <li class="flex justify-between">
+                    <span>{{ item.chai.name }}</span>
+                    <span class="font-medium">× {{ item.quantity }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center text-gray-500 py-10">
+        <p class="text-base sm:text-lg">You haven’t placed any orders yet.</p>
+        <a href="{% url 'all_chai' %}" class="mt-4 inline-block bg-amber-800 text-white px-5 py-2 rounded-md hover:bg-amber-900 transition">
+          Start Shopping
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load static tailwind_tags %}
+{% block title %}
+    Home - Chai Café
+{% endblock title %}
+
+{% tailwind_css %}
+{% block content %}
+<!-- Hero Section -->
+
+
+<div class="relative bg-cover bg-center h-[80vh]" style="background-image: url({% static 'images/cafe-hero.png' %});">
+    <div class="absolute inset-0 bg-opacity-50 flex flex-col justify-center items-center text-center px-4">
+        <h1 class="text-white text-5xl font-bold mb-4">Welcome to Chai Aur Code Café</h1>
+        <p class="text-white  max-w-2xl mb-6 text-4xl">
+            Where great ideas begin with a perfect cup of chai. Relax, connect, and get inspired.
+        </p>
+    </div>
+</div>
+
+<!-- About Section -->
+<section class="py-16 px-6 md:px-16 text-center">
+    <h2 class="text-3xl font-semibold mb-4 text-gray-800">Why Chai Aur Code?</h2>
+    <p class="text-xl md:text-2xl text-gray-700 leading-relaxed max-w-3xl mx-auto text-center ">
+        <strong>We believe every meaningful conversation starts with a cup of chai.</strong><br>
+        Whether you're a student burning the midnight oil, a freelancer chasing deadlines, or simply a chai lover looking for a calm corner — our café is your sanctuary.  
+        <br><br>
+    </p>
+    <a href="{% url 'all_chai'  %}">
+    <button class="px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition">
+            Explore Our Menu
+    </button>
+    </a>
+</section>
+
+
+<section class="bg-white py-16 overflow-hidden">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">What Our Visitors Say</h2>
+
+  <div class="relative w-full">
+    <div class="flex space-x-8 animate-scroll whitespace-nowrap px-6">
+      {% for review in reviews %}
+        <div class="relative inline-block w-80 bg-[#6B46C1] rounded-2xl p-6 text-left overflow-hidden flex-shrink-0">
+          <span class="absolute top-0 left-0 text-9xl font-bold text-[#C6F6D5] opacity-30 leading-none" style="transform: translate(-10px, -20px); font-family: 'Georgia', serif;">“</span>
+
+          <div class="flex items-start justify-between relative z-10">
+            <div class="flex-grow pr-4">
+      
+              <p class="text-white text-lg leading-relaxed mb-4 whitespace-normal">"{{ review.comment }}"</p>
+              <div class="font-semibold text-white mt-2">
+                <p class="text-base">{{ review.user.username }}</p>
+                {% if review.user.position %}
+                  <p class="text-sm opacity-80">{{ review.user.position }}</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="flex-shrink-0 mt-4">
+              <img src="{% if review.user.profile.profile_image %}{{ review.user.profile.profile_image.url }}{% else %}{% static 'images/default-avatar.jpg' %}{% endif %}"
+                alt="Profile Image"
+                class="w-20 h-20 rounded-full object-cover border-4 border-[#C6F6D5]" />
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<section class="py-16 px-6 md:px-16">
+    <div class="grid md:grid-cols-3 gap-12 text-center px-6 py-12 ">
+        <!-- Card 1 -->
+        <div class="bg-gray-50 rounded-2xl p-6 shadow-md transition-transform duration-300 hover:scale-105">
+            <img src="{% static 'images/fresh-chai.jpg' %}" class="mx-auto w-80 h-64 object-cover rounded-xl mb-4" alt="Fresh Chai">
+            <h3 class="text-2xl font-bold mb-2 text-gray-800">Freshly Brewed</h3>
+            <p class="text-gray-600 text-base">Every cup is made to order with premium ingredients.</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-gray-50 rounded-2xl p-6 shadow-md transition-transform duration-300 hover:scale-105">
+            <img src="{% static 'images/coding-vibe.jpg' %}" class="mx-auto w-80 h-64 object-cover rounded-xl mb-4" alt="Coding Vibes">
+            <h3 class="text-2xl font-bold mb-2 text-gray-800">Coding Friendly</h3>
+            <p class="text-gray-600 text-base">High-speed Wi-Fi and a peaceful ambiance for creators.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-gray-50 rounded-2xl p-6 shadow-md transition-transform duration-300 hover:scale-105">
+            <img src="{% static 'images/health.webp' %}" class="mx-auto w-80 h-64 object-contain mb-4" alt="Cozy Ambience">
+            <h3 class="text-2xl font-bold mb-2 text-gray-800">Cozy Ambience</h3>
+            <p class="text-gray-600 text-base">Modern interior with a desi twist to make you feel at home.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<footer class="bg-amber-900 text-white pt-12 pb-8 px-6 md:px-16">
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+
+    <!-- Brand and About -->
+    <div>
+      <h4 class="text-2xl font-bold mb-4">Chai Aur Code Café</h4>
+      <p class="text-amber-200 text-sm leading-relaxed">
+        A cozy corner for dreamers, coders, and chai lovers. Uniting tech and tea since 2023.
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <h5 class="text-lg font-semibold mb-3">Quick Links</h5>
+      <ul class="space-y-2 text-sm text-amber-300">
+        <li><a href="#" class="hover:underline">About Us</a></li>
+        <li><a href="{% url 'all_chai' %}" class="hover:underline">Menu</a></li>
+        <li><a href="#" class="hover:underline">Contact</a></li>
+        <li><a href="#" class="hover:underline">Privacy Policy</a></li>
+      </ul>
+    </div>
+
+    <!-- Follow & Contact -->
+    <div>
+      <h5 class="text-lg font-semibold mb-3">Connect with Us</h5>
+      <div class="flex items-center gap-4 text-amber-200 text-lg">
+        <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
+        <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <p class="mt-4 text-sm text-amber-300">
+        Email: <a href="mailto:chai@aurcode.com" class="underline">chai@aurcode.com</a>
+      </p>
+      <p class="text-sm text-amber-300">
+        Call: <a href="tel:+911234567890" class="underline">+91 12345 67890</a>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Copyright -->
+  <div class="border-t border-amber-700 mt-10 pt-6 text-center text-sm text-amber-300">
+    © {{ now|date:"Y" }} Chai Aur Code. All rights reserved.
+  </div>
+</footer>
+
+
+{% endblock content %}

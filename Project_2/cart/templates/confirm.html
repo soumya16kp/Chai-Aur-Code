@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-6 bg-white shadow-xl rounded-2xl mt-10">
+  <h2 class="text-3xl font-bold text-center mb-8">🛍️ Review Your Order</h2>
+
+  {% if cart_items %}
+    <ul class="divide-y divide-gray-200 mb-6">
+      {% for item in cart_items %}
+        <li class="py-4 flex justify-between items-center">
+          <div>
+            <p class="font-semibold text-lg">{{ item.name }}</p>
+            <p class="text-sm text-gray-500">Quantity: {{ item.quantity }} × ₹{{ item.price }}</p>
+          </div>
+          <p class="text-lg font-semibold text-green-600">₹{{ item.total }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="flex justify-between items-center font-semibold text-lg mb-6">
+      <span>Total:</span>
+      <span>₹{{ total_amount }}</span>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <button
+        type="submit"
+        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md"
+      >
+        ✅ Confirm Order
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <a href="{% url 'cart' %}" class="inline-block mt-4 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-4 rounded-full transition">
+        ← Go back to cart
+      </a>
+    </div>
+  {% else %}
+    <p class="text-center text-red-500 text-lg">🛒 Your cart is empty.</p>
+  {% endif %}
+</div>
+{% endblock %}

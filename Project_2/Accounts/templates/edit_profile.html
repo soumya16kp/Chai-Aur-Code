@@ -1,0 +1,60 @@
+<!-- templates/accounts/edit_profile.html -->
+{% extends "layout.html" %}
+{% block title %}
+    Edit-Profile
+{% endblock title %}
+    
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+  <div class="bg-white shadow-xl rounded-xl w-full max-w-md p-6">
+    <h2 class="text-2xl font-semibold text-center text-gray-700 mb-6">Edit Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div>
+        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Username
+        </label>
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Email
+        </label>
+        {{ form.email }}
+        {{ form.email.errors }}
+      </div>
+
+      <!-- Profile Image -->
+      <div>
+        <label for="{{ form.profile_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+          Profile Image
+        </label>
+        {{ form.profile_image }}
+        {{ form.profile_image.errors }}
+
+        {% if user.profile.profile_image %}
+          <div class="mt-3">
+            <img src="{{ user.profile.profile_image.url }}" 
+                 alt="Current Profile Image"
+                 class="w-24 h-24 rounded-full object-cover border border-gray-300">
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center pt-2">
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

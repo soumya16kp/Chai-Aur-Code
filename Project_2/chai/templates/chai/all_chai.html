@@ -1,0 +1,160 @@
+{% extends "layout.html" %}
+{% load static tailwind_tags %}
+{% load custom_filters %}
+
+{% block title %}
+    Chai Page 
+{% endblock title %}
+
+{% block content %}
+<div class="p-6 max-w-7xl mx-auto">
+    <header class="mb-8 text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">Explore Our Chai Collection</h1>
+        <p class="text-2xl text-gray-600 mx-auto text-center
+          animate-fadeIn
+          whitespace-normal sm:whitespace-nowrap">
+          Steaming cups of comfort,<br class="block sm:hidden">
+          one sip at a time.
+        </p>
+
+
+          
+
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {% if chais %}
+            {% for chai in chais %}
+              {% with chai_id=chai.id|stringformat:"s" %}
+              <div class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+                  <img class="w-full h-52 object-cover" src="{{ chai.image.url }}" alt="{{ chai.name|default:'Chai Image' }}">
+                  <div class="p-4">
+                      <div class="flex justify-between items-center gap-4">
+                          <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ chai.name }}</h3>
+                          <p class="text-xl text-orange-600 font-semibold mb-4">₹{{ chai.price }}</p>
+                      </div>
+                      <div class="flex justify-between items-center gap-4">
+                          <a href="{% url 'chai_detail' chai.id %}">
+                              <button class="px-4 py-2 bg-gradient-to-r from-yellow-500
+                                          to-orange-500 text-white font-semibold rounded-lg
+                                          hover:from-yellow-600 hover:to-orange-600 transition">
+                                  View Details
+                              </button>
+                          </a>
+
+                          <div id="counterContainer{{ chai.id }}">
+                              {% if chai.id in cart_items %}
+                                  <button 
+                                      id="addBtn{{ chai.id }}" 
+                                      class="hidden px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition"
+                                      onclick="addToCart({{ chai.id }})"
+                                  >
+                                      Add
+                                  </button>
+
+                                  <div id="quantityCounter{{ chai.id }}" class="flex items-center space-x-2 mt-2">
+                                      <button onclick="updateCart('{{ chai.id }}', 'decrease')" class="px-2 py-1 bg-red-500 text-white rounded">−</button>
+                                      <span id="quantityValue{{ chai.id }}" class="text-lg font-medium">{{ cart_items|get_item:chai.id }}</span>
+                                      <button onclick="updateCart('{{ chai.id }}', 'increase')" class="px-2 py-1 bg-green-500 text-white rounded">+</button>
+                                  </div>
+                              {% else %}
+                                  <!-- Not in cart: show add button -->
+                                  <button 
+                                      id="addBtn{{ chai.id }}" 
+                                      class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition"
+                                      onclick="addToCart({{ chai.id }})"
+                                  >
+                                      Add
+                                  </button>
+
+                                  <div id="quantityCounter{{ chai.id }}" class="hidden items-center space-x-2 mt-2">
+                                      <button onclick="updateCart('{{ chai.id }}', 'decrease')" class="px-2 py-1 bg-red-500 text-white rounded">−</button>
+                                      <span id="quantityValue{{ chai.id }}" class="text-lg font-medium">1</span>
+                                      <button onclick="updateCart('{{ chai.id }}', 'increase')" class="px-2 py-1 bg-green-500 text-white rounded">+</button>
+                                  </div>
+                              {% endif %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              {% endwith %}
+            {% endfor %}
+
+        {% else %}
+            <p class="col-span-full text-center text-gray-500 text-lg">No chai available at the moment.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript for Counter -->
+<script>
+  function updateCartQuantity() {
+    fetch('/cart/cart-quantity/')
+      .then(response => response.json())
+      .then(data => {
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+          cartCount.textContent = data.total_quantity;
+        }
+      });
+  }
+  function addToCart(chaiId) {
+    fetch('/cart/add/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({ chai_id: chaiId, quantity: 1 }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById(`addBtn${chaiId}`).classList.add('hidden');
+        document.getElementById(`quantityCounter${chaiId}`).classList.remove('hidden');
+        document.getElementById(`quantityValue${chaiId}`).textContent = 1;
+        updateCartQuantity();
+      }
+    });
+  }
+
+
+  function updateCart(chaiId, action) {
+    const valueElem = document.getElementById(`quantityValue${chaiId}`);
+    let quantity = parseInt(valueElem.textContent);
+    if (action === 'increase') quantity += 1;
+    if (action === 'decrease' && quantity > 0) quantity -= 1;
+
+    fetch('/cart/update/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({ chai_id: chaiId, quantity: quantity }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        valueElem.textContent = quantity;
+        updateCartQuantity(); 
+      }
+    });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock content %}

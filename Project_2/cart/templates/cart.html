@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block title %}Your Cart - ChaiSite{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-4 sm:p-6">
+  <h1 class="text-2xl sm:text-3xl font-bold mb-6 text-amber-900 text-center sm:text-left">Your Cart</h1>
+
+  {% if cart.items.all %}
+    <div class="space-y-6">
+      {% for item in cart.items.all %}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-amber-200 pb-6">
+
+          <!-- Image + Info -->
+          <div class="flex gap-4 items-center">
+            <img src="{{ item.chai.image.url }}" alt="{{ item.chai.name }}"
+                class="w-20 h-20 rounded-lg object-cover shadow-md">
+            <div>
+              <h2 class="text-lg font-semibold text-amber-800">{{ item.chai.name }}</h2>
+              <p class="text-sm text-amber-600 capitalize">{{ item.chai.get_type_display }}</p>
+            </div>
+          </div>
+
+          <!-- Qty + Price + Delete -->
+          <div class="flex justify-between sm:justify-end items-center w-full sm:w-auto gap-6 mt-2 sm:mt-0 px-2 sm:px-0">
+            <div class="text-center sm:text-left">
+              <span class="text-sm text-amber-900">Qty: {{ item.quantity }}</span>
+            </div>
+            <div class="text-center sm:text-right">
+              <span class="text-base font-semibold text-amber-900">₹{{ item.total_price|floatformat:2 }}</span>
+            </div>
+            <form action="{% url 'remove_from_cart' item.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="text-red-600 hover:text-red-800 transition p-2" title="Remove item">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      {% endfor %}
+
+      <!-- Cart Total and Checkout -->
+      <div class="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-amber-200 text-center sm:text-left">
+        <a href="{% url 'all_chai' %}" class="text-amber-700 font-semibold hover:text-amber-900 transition mb-4 sm:mb-0">
+          ← Continue Shopping
+        </a>
+
+        <div>
+          <p class="text-xl sm:text-2xl font-bold text-amber-900">Total: ₹{{ cart.total_price|floatformat:2 }}</p>
+          <a href="{% url 'checkout' %}" 
+             class="inline-block mt-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-6 rounded-full transition">
+            Proceed to Checkout
+          </a>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <div class="text-center py-20 text-amber-700">
+      <p class="text-lg sm:text-xl mb-4">Your cart is empty 😔</p>
+      <a href="{% url 'all_chai' %}" 
+         class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded-full transition">
+         Browse Chai Menu
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
