@@ -9,8 +9,14 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-import os 
+import os,environ
 from pathlib import Path
+from environ import Env
+
+env = environ.Env()
+environ.Env.read_env()
+env=Env()
+ENVIRONMENT=env('ENVIRONMENT',default="production")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +28,15 @@ LOGOUT_REDIRECT_URL = '/'
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w-l*dbx(scwin!+=qn6+g0ad+=pez^l8_w6637*l#ov)w*_*nu'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT=='development':
+    DEBUG = True
+else:
+    DEBUG=False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1','*']
 
 
 # Application definition
@@ -39,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'chai',
     'cart',
     'tailwind',
@@ -65,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'Project_2.urls'
@@ -90,13 +102,20 @@ WSGI_APPLICATION = 'Project_2.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENVIRONMENT=='development':
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+
+else: 
+    import dj_database_url
+    DATABASES={
+        'default':dj_database_url.parse(env('DATABASE_URL'))
+    }
 
 
 # Password validation
@@ -135,8 +154,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS=[os.path.join(BASE_DIR,'static')]
+STATIC_ROOT=BASE_DIR/'staticfiles'
 
 MEDIA_URL='/media/'
+if ENVIRONMENT=='development':
+    MEDIA_ROOT=BASE_DIR/'media'
+else:
+    DEFAULT_FILE_STORAGE='cloudinary_storage.storage.MediaCloudinaryStorage'
+    CLOUDINARY_STORAGE={
+        'CLOUDINARY_URL':env('CLOUDINARY_URL')
+    }
+
 MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
 # Default primary key field type

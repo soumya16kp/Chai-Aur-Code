@@ -46,7 +46,8 @@ def logout_view(request):
 
 @login_required
 def edit_profile(request):
-    profile = request.user.profile
+    
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
@@ -56,4 +57,4 @@ def edit_profile(request):
     else:
         form = UserProfileForm(instance=profile, user=request.user)
 
-    return render(request, 'edit_profile.html', {'form': form,'profile':Profile})
+    return render(request, 'edit_profile.html', {'form': form, 'profile': profile})
