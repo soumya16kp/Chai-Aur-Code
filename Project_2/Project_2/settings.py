@@ -37,7 +37,7 @@ if ENVIRONMENT=='development':
 else:
     DEBUG=True
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.vercel.app', 'chai-aur-code-yiqj.onrender.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
     'https://chai-aur-code-yiqj.onrender.com',  
