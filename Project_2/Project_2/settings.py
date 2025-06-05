@@ -35,7 +35,7 @@ SECRET_KEY = env('SECRET_KEY')
 if ENVIRONMENT=='development':
     DEBUG = True
 else:
-    DEBUG=False
+    DEBUG=True
 
 ALLOWED_HOSTS = ['localhost','127.0.0.1','chai-aur-code-yiqj.onrender.com']
 CSRF_TRUSTED_ORIGINS=['https://chai-aur-code-yiqj.onrender.com']
